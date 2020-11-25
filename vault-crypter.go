@@ -23,10 +23,11 @@ import (
 	"sort"
 	"bufio"
 	"strconv"
-	//Functions "transit/Functions"
+
 	vault "github.com/hashicorp/vault/api" // go get github.com/hashicorp/vault/api
 	"github.com/ryanuber/columnize"
 	"github.com/mitchellh/cli"
+	//"github.com/skulblaka24/vault-crypter"
 )
 
 /* ##########  Variables ########## */
@@ -717,13 +718,15 @@ func main() {
 		switch {
 
 		case *crypt == true:
-			checkLocalKey()
+			/*checkLocalKey()
 
 			// Debug
 			//fmt.Printf("Key: %x\n", key)
 			//fmt.Printf("Data: %s\n", *crypt_input_name)
 
-			encryptFile(*crypt_input_name, "local:encryptedfile")
+			encryptFile(*crypt_input_name, "local:encryptedfile")*/
+			message := functions.PrintValue()
+			fmt.Println(message)
 
 		case *decrypt == true:
 			checkLocalKey()
