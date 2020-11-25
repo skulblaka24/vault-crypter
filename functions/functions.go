@@ -1,8 +1,8 @@
 package functions
 
-import (
-	"fmt"
-)
+//import (
+//	"fmt"
+//)
 
 func PrintValue() string{
 	message := "PACKAGE FUNCTIONS"
