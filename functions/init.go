@@ -5,28 +5,53 @@ import (
 	"fmt"
 	"os"
 	"flag"
+	"time"
 	"bufio"
 	"strings"
+	"strconv"
 	"github.com/hashicorp/vault/api" // go get github.com/hashicorp/vault/api
 )
 
 var vault_addr = os.Getenv("VAULT_ADDR")
 var vault_token string
 var vault_client *api.Client // global variable
+var color string
 
-func Error(error_type string, message string, Color string, exit_type string) {
+// Error Type | Message | Color | Exit type
+func Error(error_type string, message string, useColor bool, exit_type string) {
+	if useColor == true{color = ColorRed}else{color = ColorWhite}
+
+	fmt.Printf("%v#################################################################%v\n", color, ColorReset)
+	if error_type == "arg" {
+		fmt.Printf("%v#%v                        Argument Error                         %v#%v\n", color, ColorReset, color, ColorReset)
+	} else if error_type == "main" {
+		fmt.Printf("%v#%v                        Process Error                          %v#%v\n", color, ColorReset, color, ColorReset)
+	} else if error_type == "env" {
+		fmt.Printf("%v#%v                 Environment Variable Error                    %v#%v\n", color, ColorReset, color, ColorReset)
+	}
+	fmt.Printf("%v#################################################################%v\n", color, ColorReset)
+	fmt.Printf("%vDate:%v %v\n", color, ColorReset, time.Now().Format("02/01/2006"))
+	fmt.Printf("%vTime:%v %v\n", color, ColorReset, time.Now().Format("15:04:05"))
+	
+	fmt.Printf("%vMessage:%v %v\n", color, ColorReset, message)
+	if exit_type == "0" || exit_type == "1" {
+		fmt.Printf("Exiting....\n")
+		e, _ := strconv.Atoi(exit_type)
+		os.Exit(e)
+	}
+}
+
+/*func Debug(error_type string, message string, Color string, exit_type string) {
 	if error_type == "arg" {
 		fmt.Printf("#################################################################\n")
-		//fmt.Printf("#                                                               #\n")
 		fmt.Printf("#                        Argument Error                         #\n")
-		//fmt.Printf("#                                                               #\n")
 		fmt.Printf("#################################################################\n")
 		fmt.Printf("Message: %v\n", message)
 		if exit_type == "0" || exit_type == "1" {
 			fmt.Printf("Exiting....\n")
 		}
 	}
-}
+}*/
 
 func IsArgPassed(name string) bool {
     found := false
@@ -52,7 +77,7 @@ func CheckArgs() map[string]bool {
 func InitVault(authType string) (string, *api.Client) {
 	
 	// Config can be set through ENV before any step and creating a new client
-    //os.Setenv("VAULT_TOKEN", "s.JLxf3Iun7m2FWJD5ZgSE3p4J")
+    //os.Setenv("VAULT_TOKEN", "<TOKEN>")
 
 	//fmt.Println("### Step: Vault Initialisation:")
 	config := &api.Config{
@@ -73,10 +98,7 @@ func InitVault(authType string) (string, *api.Client) {
 		//fmt.Println("authType: token")
 
 		vault_token = os.Getenv("VAULT_TOKEN")
-		if vault_token == "" {
-			fmt.Println("Error: You need to set the token environment variable: VAULT_TOKEN")
-			os.Exit(1)
-		}
+		
 		//fmt.Printf("Token: %s\n", vault_token)
 
 	case authType == "userpass":
@@ -84,10 +106,6 @@ func InitVault(authType string) (string, *api.Client) {
 
 		vault_username := os.Getenv("VAULT_USERNAME")
 		vault_password := os.Getenv("VAULT_PASSWORD")
-		if vault_username == "" || vault_password == "" {
-			fmt.Println("Error: You need to set two mandatory environment variables: VAULT_USERNAME, VAULT_PASSWORD")
-			os.Exit(1)
-		}
 		
 		vault_token = userpassLogin(vault_username, vault_password)
 
@@ -98,10 +116,6 @@ func InitVault(authType string) (string, *api.Client) {
 
 		vault_role_id := os.Getenv("VAULT_ROLE_ID")
 		vault_secret_id := os.Getenv("VAULT_SECRET_ID")
-		if vault_role_id == "" || vault_secret_id == "" {
-			fmt.Println("Error: You need to set two mandatory environment variables: VAULT_ROLE_ID, VAULT_SECRET_ID")
-			os.Exit(1)
-		}
 
 		vault_token = approleLogin(vault_role_id, vault_secret_id)
 
@@ -113,7 +127,7 @@ func InitVault(authType string) (string, *api.Client) {
 	return vault_token, vault_client
 }
 
-func InitTransit (path string) {
+func EnableTransit (path string) {
 
 	options := map[string]interface{}{
 			"type": "transit",
@@ -130,7 +144,7 @@ func InitTransit (path string) {
 	}
 }
 
-func InitKV (path string) {
+func EnableKV (path string) {
 
 	options := map[string]interface{}{
 			"type": "kv-v2",

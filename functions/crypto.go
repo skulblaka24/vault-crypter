@@ -14,7 +14,7 @@ import (
 
 var Key []byte
 
-func CheckLocalKey() {
+/*func CheckLocalKey() {
 	thekey, err := ioutil.ReadFile("key") //Check to see if a key was already created
 	fmt.Printf("Before conversion Key: %x\n", thekey)
         if err != nil {
@@ -23,7 +23,7 @@ func CheckLocalKey() {
                 //key = thekey //If so, set key as the key found in the file
         		Key = DecodeBase64(thekey)
         }
-}
+}*/
 
 func EncryptFile(inputfile string, outputfile string) {
 	b, err := ioutil.ReadFile(inputfile) //Read the target file
@@ -61,7 +61,7 @@ func DecryptFile(inputfile string, outputfile string) {
 	z, err := ioutil.ReadFile(inputfile)
 	result := decrypt(Key, z)
 	//fmt.Printf("Decrypted: %s\n", result)
-	fmt.Printf("Decrypted file was created with file permissions 0777\n")
+	//fmt.Printf("Decrypted file was created with file permissions 0777\n")
 	err = ioutil.WriteFile(outputfile, result, 0777)
 	if err != nil {
 		fmt.Printf("Unable to create decrypted file!\n")
@@ -98,16 +98,6 @@ func DecodeBase64(b []byte) []byte {
 	return data
 }
 
-// New base64 decoding function, will slowly decomission the DecodeBase64 one.
-/*func DecodeBase64_string(b string) []byte {
-	data, err := base64.StdEncoding.DecodeString(b)
-	if err != nil {
-		fmt.Printf("Error: Cannot decrypt string input\n")
-		os.Exit(0)
-	}
-	return data
-}*/
-
 func rand_str(str_size int) string {
 	alphanum := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 	var bytes = make([]byte, str_size)
@@ -118,7 +108,7 @@ func rand_str(str_size int) string {
 	return string(bytes)
 }
 
-func createPrivKey() []byte {
+func CreatePrivKey() []byte {
 	newkey := []byte(rand_str(32))
 	err := ioutil.WriteFile("key", newkey, 0644)
 	if err != nil {

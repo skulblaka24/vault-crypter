@@ -2,9 +2,47 @@ package functions
 
 import (
 	"fmt"
+	"io/ioutil"
 	"strconv"
 	"github.com/hashicorp/vault/api" // go get github.com/hashicorp/vault/api
 )
+
+func CheckKey(mode string, secret_name_version int, secret_name_kv string, path_kv string, path_transit string, key_name_transit string) (string, bool, *api.Secret) {
+	var key_exist bool
+    var data_key *api.Secret
+    var wrapped_key string
+
+	if mode == "local" {
+		thekey, err := ioutil.ReadFile("key") //Check to see if a key was already created
+		//fmt.Printf("Before conversion Key: %x\n", thekey)
+        if err != nil {
+                Key = CreatePrivKey() //If not, create one
+        } else {
+                //key = thekey //If so, set key as the key found in the file
+        		Key = DecodeBase64(thekey)
+        }
+    } else if mode == "vault" {
+    	
+    	if secret_name_version != 0 {
+			wrapped_key = ReadSecret(path_kv, secret_name_kv, secret_name_version, "kv2")
+			key_exist = true
+
+			// Debug
+			//if *debug {fmt.Printf("WRAPPED_KEY: %v | %T\n", wrapped_key, wrapped_key)}
+		} else {
+
+			// Get Wrapped Derived Key from the transit engine
+			data_key = GetDataKey(path_transit, key_name_transit)
+			wrapped_key = fmt.Sprintf("%v", data_key.Data["ciphertext"])
+			key_exist = false
+
+			// Debug
+			//if *debug {fmt.Printf("DATA_KEY: %v | %T\n\n", data_key, data_key)
+			//fmt.Printf("WRAPPED_KEY: %v | %T\n", wrapped_key, wrapped_key)}
+		}
+    }
+    return wrapped_key, key_exist, data_key
+}
 
 func ReadSecret(path string, secret string, version int, kversion string) string {
 	var wrapped_key string
@@ -53,14 +91,14 @@ func ReadSecret(path string, secret string, version int, kversion string) string
 	return wrapped_key
 }
 
-func GetDataKey(key string) (*api.Secret){
+func GetDataKey(path string, key string) (*api.Secret){
 
 	context := map[string]interface{}{
 		"context": "Ym9uam91cg==",
 	}
 
 	// Can also be transit/datakey/wrapped/
-	datakey, err := vault_client.Logical().Write("transit/datakey/plaintext/" + key, context)
+	datakey, err := vault_client.Logical().Write(path + "/datakey/plaintext/" + key, context)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -72,9 +110,9 @@ func GetDataKey(key string) (*api.Secret){
 	return datakey
 }
 
-func DecryptString(ciphertext interface {}, key string) (*api.Secret) {
+func DecryptString(path string, ciphertext interface {}, key string) (*api.Secret) {
 
-	decrypted_contents, err := vault_client.Logical().Write("transit/decrypt/" + key, map[string]interface{} {
+	decrypted_contents, err := vault_client.Logical().Write(path + "/decrypt/" + key, map[string]interface{} {
 		"ciphertext": ciphertext,
 		"context": "Ym9uam91cg==",
 	})

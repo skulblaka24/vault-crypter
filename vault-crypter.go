@@ -8,35 +8,18 @@
 package main
 
 import (
-	//"crypto/aes"
-	//"crypto/cipher"
-	//"crypto/rand"
-	//"encoding/base64"
-	//"encoding/json"
 	"fmt"
 	"os"
-	//"io"
-	//"io/ioutil"
 	"flag"
-	//"strings"
-	//"time"
-	//"sort"
-	//"bufio"
 	"strconv"
 
-	"github.com/hashicorp/vault/api" // go get github.com/hashicorp/vault/api
+	//"github.com/hashicorp/vault/api" // go get github.com/hashicorp/vault/api
 	"github.com/skulblaka24/vault-crypter/functions"
 )
 
 /* ##########  Variables ########## */
 
-//var vault_addr = os.Getenv("VAULT_ADDR")
-//var vault_token string
-//var vault_client *api.Client // global variable
-
-var data_key *api.Secret
 var wrapped_key string
-var key_exist bool
 var key_version string
 var path_secret string
 
@@ -83,27 +66,43 @@ func main() {
 	    fmt.Printf("Usage: vault-crypter [OPTION]...\n\n")
 	    fmt.Printf("Vault Workflow available:\n")
 
-	    fmt.Printf("1 - Initialize Vault: $ vault-crypter -i [OPTION]...[OPTION]\n")
-	    fmt.Printf("			      Optional argument: -pt -kt -pk\n")
+	    fmt.Printf("1 - Initialize Vault (Optional argument: -pt -kt -pk): \n")
+	    fmt.Printf(" 	$ vault-crypter -i [OPTION]...[OPTION]\n\n")
 
-	    fmt.Printf("2 - Crypt a file without an existing in Vault: $ vault-crypter -c [OPTION]...[OPTION]\n")
-	    fmt.Printf("			      Optional argument: \n")
+	    fmt.Printf("2 - Crypt a file without an existing key in Vault (Optional argument: -pt -kt -pk -sk -cin -con ): \n")
+	    fmt.Printf(" 	$ vault-crypter -c [OPTION]...[OPTION]\n\n")
 
-	    fmt.Printf("3 - Crypt a file without an existing in Vault: $ vault-crypter -c [OPTION]...[OPTION]\n")
-	    fmt.Printf("			      Optional argument: \n")
+	    fmt.Printf("3 - Crypt a file with an existing key in Vault (Optional argument: -pt -kt -pk -sk -sv -cin -con): \n")
+	    fmt.Printf(" 	$ vault-crypter -c [OPTION]...[OPTION]\n\n")
 
-	    fmt.Printf("4 - Decrypt a file with an existing in Vault: $ vault-crypter -d [OPTION]...[OPTION]\n")
-	    fmt.Printf("			      Optional argument: \n")
+	    fmt.Printf("4 - Decrypt a file with an existing key in Vault (Required: -din -sk -sv, Optional: -pt -kt -pk): \n")
+	    fmt.Printf(" 	$ vault-crypter -d [OPTION]...[OPTION]\n\n")
 
 	    fmt.Printf("\nLocal Workflow available:\n")
 
-	    fmt.Printf("5 - Crypt a file with/without an existing local key: $ vault-crypter -m local -c [OPTION]...[OPTION]\n")
-	    fmt.Printf("			      Optional argument: \n")
+	    fmt.Printf("5 - Crypt a file with/without an existing local key (Optional argument: -cin): \n")
+	    fmt.Printf(" 	$ vault-crypter -m local -c [OPTION]...[OPTION]\n\n")
 
-	    fmt.Printf("6 - Decrypt a file with an existing local key: $ vault-crypter -m local -d [OPTION]...[OPTION]\n")
-	    fmt.Printf("			      Optional argument: \n")
+	    fmt.Printf("6 - Decrypt a file with an existing local key (Optional argument: -din): \n")
+	    fmt.Printf(" 	$ vault-crypter -m local -d [OPTION]...[OPTION]\n\n")
 
-	    fmt.Printf("\n\n")
+	    fmt.Printf("\n")
+
+		fmt.Printf("\n")
+		fmt.Printf("Environment variables to provide vault-crypter with Vault connection info:")
+		fmt.Printf("All original Vault client environment variable are be compatible...")
+		fmt.Printf("VAULT_ADDR - REQUIRED - Must be the Vault cluster active node - Format: https://FQDN:8200")
+		fmt.Printf("VAULT_CACERT - CA can be specified to verify vault https certificate")
+		fmt.Printf("VAULT_SKIP_VERIFY - To avoid ssl verification")
+		fmt.Printf("VAULT_NAMESPACE - To set the namespace")
+		fmt.Printf("VAULT_TOKEN - If you are using the token auth method on Vault")
+		fmt.Printf("VAULT_ROLE_ID - If you are using the approle auth method on Vault")
+		fmt.Printf("VAULT_SECRET_ID - If you are using the approle auth method on Vault")
+		fmt.Printf("VAULT_USERNAME - If you are using the userpass auth method on Vault")
+		fmt.Printf("VAULT_PASSWORD - If you are using the userpass auth method on Vault")
+		fmt.Printf("\n")
+
+
 	    fmt.Printf("Options:\n")
 	    flag.PrintDefaults()
 	}
@@ -117,9 +116,8 @@ func main() {
 	key_name_transit := flag.String("kt", "key", "Key name for the transit engine")
 
 	path_kv := flag.String("pk", "vault-crypt-kv", "Add a custom path for the kv engine")
-	secret_name_kv := flag.String("sk", "", "Secret name for the stored wrapped key in the kv engine")
+	secret_name_kv := flag.String("sk", "transit-key", "Secret name for the stored wrapped key in the kv engine")
 	secret_name_version := flag.Int("sv", 0, "Version number for the stored wrapped key in the kv engine")
-
 
 	crypt := flag.Bool("c", false, "To crypt file or binary")
 	crypt_input_name := flag.String("cin", "input", "Add a crypt input file name")
@@ -128,52 +126,55 @@ func main() {
 	decrypt := flag.Bool("d", false, "To decrypt file or binary")
 	decrypt_input_name := flag.String("din", "local:encryptedfile", "Add a crypt input file name")
 
-
 	useColor := flag.Bool("color", false, "Display colorized output")
-	//debug := flag.Bool("v", false, "Verbose flag")
+	debug := flag.Bool("v", false, "Verbose flag")
 	
 	flag.Parse()
 
 
-	// HERE: Requirement Check: which option goes with which option
-
-	// Initially there is 124 lines of code in the enc.go
-
-	/* #####
-	Verify env variables here
-	VAULT_SKIP_VERIFY
-	VAULT_ADDR
-	VAULT_TOKEN
-	VAULT_CA_CERT
-	VAULT_ADDR=https://v2.starfly.fr:8200
-	VAULT_CACERT=/Users/gauth/Vault/Lab/raft-cluster/certs/ca.crt
-	VAULT_ROLE_ID=5746f456-da56-52e7-8ebc-d957f2c1f4ff
-	VAULT_SECRET_ID=3c348606-d074-1c85-eb5b-eae06a489c74
-	VAULT_USERNAME=admin
-	VAULT_PASSWORD=Skulblaka24
-	VAULT_TOKEN=s.JLxf3Iun7m2FWJD5ZgSE3p4J
-	##### */
+	// Environment Variable Check
+	switch {
+	case os.Getenv("VAULT_ADDR") == "":
+		functions.Error("env", "\nYou need to set the environment variable for the vault adress: VAULT_ADDR", *useColor, "1")
+	case *login_method == "token" && os.Getenv("VAULT_TOKEN") == "":
+		functions.Error("env", "\nYou need to set the token environment variable: VAULT_TOKEN", *useColor, "1")
+	case *login_method == "approle" && (os.Getenv("VAULT_ROLE_ID") == "" || os.Getenv("VAULT_SECRET_ID") == ""):
+		functions.Error("env", "\nYou need to set two mandatory environment variables: VAULT_ROLE_ID, VAULT_SECRET_ID", *useColor, "1")
+	case *login_method == "userpass" && (os.Getenv("VAULT_USERNAME") == "" || os.Getenv("VAULT_PASSWORD") == ""):
+		functions.Error("env", "\nYou need to set two mandatory environment variables: VAULT_USERNAME, VAULT_PASSWORD", *useColor, "1")
+	}
 
 	// Arguments Check
 	args_status := functions.CheckArgs()
 	switch {
 	case args_status["c"] == true && args_status["d"] == true:
-		// Error Type | Message | Color | Exit type
-		functions.Error("arg", "You cannot crypt and decrypt at the same time !\nPlease remove either -c ou -d", ColorRed, "1")
-		os.Exit(1)
-		
+		functions.Error("arg", "\nYou cannot crypt and decrypt at the same time !\nPlease remove either -c ou -d", *useColor, "1")
+	
+	case args_status["i"] == true && (args_status["sk"] == true || args_status["sv"] == true || args_status["cin"] == true || args_status["con"] == true || args_status["din"] == true):
+		functions.Error("arg", "\nThe only options available for -i are -pk -pt -kt !", *useColor, "1")
+	
+	case args_status["c"] == true && args_status["din"] == true:
+		functions.Error("arg", "\nThe -din argument is not available for -c !", *useColor, "1")
+	
+	case args_status["d"] == true && args_status["cin"] == true && args_status["con"] == true:
+		functions.Error("arg", "\nThe -cin and -con argument are not available for -d !", *useColor, "1")
+	
+	case args_status["d"] == true && args_status["din"] == false && *mode == "vault":
+		functions.Error("arg", "Must specify input filename with -din !", *useColor, "1")
+	
+	case args_status["sv"] == true && args_status["sk"] == false:
+		functions.Error("arg", "\nIf the secret version (-sv) is specified, you must add the parameter -sk !", *useColor, "1")
+	
+	//case (args_status["din"] == true || args_status["sv"] == true || args_status["sk"] == true || args_status["kt"] == true || args_status["pt"] == true || args_status["pk"] == true || args_status["cin"] == true || args_status["con"] == true) && (args_status["c"] == false || args_status["d"] == false || args_status["i"] == false):
+	//	functions.Error("arg", "\nYou cannot use optional argument without -c or -d or -i\nPlease add one of them depending on the action wanted", *useColor, "1")
 	}
 
-
-
-    
-
+	// Main
 	switch {
 
 	// Error handling
 	case *mode != "vault" && *mode != "local":
-		fmt.Printf("Error: The mode parameter should be vault or local, exiting...")
-		os.Exit(1)
+		functions.Error("arg", "The mode parameter should be vault or local", *useColor, "1")
 
 	// Vault Mode Handling
 	case *mode == "vault":
@@ -185,50 +186,32 @@ func main() {
 
 		// Initialize the transit engine, the transit key and the KV path
 		case *init == true:
-			functions.InitTransit(*path_transit)
+			functions.EnableTransit(*path_transit)
 			functions.CreateKeyTransit(*path_transit, *key_name_transit)
-			functions.InitKV(*path_kv)
+			functions.EnableKV(*path_kv)
 
 		// Handle the encryption mechanism
 		case *crypt == true:
 
-			// Check if key is in vault in kv for the workflow 3.
-			if *secret_name_kv != "" && *secret_name_version != 0 {
-				wrapped_key = functions.ReadSecret(*path_kv, *secret_name_kv, *secret_name_version, "kv2")
-				key_exist = true
-				path_secret = *secret_name_kv
-
-				// Debug
-				//fmt.Printf("WRAPPED_KEY: %v | %T\n", wrapped_key, wrapped_key)
-			} else {
-				// Get Wrapped Derived Key from the transit engine
-				data_key = functions.GetDataKey(*key_name_transit)
-				wrapped_key = fmt.Sprintf("%v", data_key.Data["ciphertext"])
-				key_exist = false
-				path_secret = "transit-key"
-
-				// Debug
-				//fmt.Printf("DATA_KEY: %v | %T\n", data_key, data_key)
-				//fmt.Printf("WRAPPED_KEY: %v | %T\n", wrapped_key, wrapped_key)
-			}
+			wrapped_key, key_exist, data_key := functions.CheckKey(*mode, *secret_name_version, *secret_name_kv, *path_kv, *path_transit, *key_name_transit)
 
 			// Unwrap the wrapped derived key
-			plaintext_key := functions.DecryptString(wrapped_key, *key_name_transit)
+			plaintext_key := functions.DecryptString(*path_transit, wrapped_key, *key_name_transit)
 			
 			// Decode the derived key
 			functions.Key = functions.DecodeBase64([]byte(plaintext_key.Data["plaintext"].(string)))
 			
 			if key_exist == false {
 				// Save the wrapped derived key in the kv engine
-				key_version = functions.WriteSecret("kv2", *path_kv+"/data/"+path_secret, data_key.Data["ciphertext"].(string) )
+				key_version = functions.WriteSecret("kv2", *path_kv+"/data/"+*secret_name_kv, data_key.Data["ciphertext"].(string) )
 			} else {
 				key_version = strconv.Itoa(*secret_name_version)
 			}
 
 			// Debug
-			//fmt.Printf("DECRYPTED_CONTENT: %v | %T\n", plaintext_key, plaintext_key)
-			//fmt.Printf("GLOBAL_KEY: %v | %T\n", functions.Key, functions.Key)
-			//fmt.Printf("%v", key_version)
+			if *debug {fmt.Printf("DECRYPTED_CONTENT: %v | %T\n", plaintext_key, plaintext_key)
+			fmt.Printf("GLOBAL_KEY: %v | %T\n", functions.Key, functions.Key)
+			fmt.Printf("KEY_VERSION: %v | %T\n", key_version, key_version)}
 			
 			// Crypt the file
 			functions.EncryptFile(*crypt_input_name, "v"+key_version+":"+*crypt_output_name)
@@ -238,16 +221,16 @@ func main() {
 			wrapped_key = functions.ReadSecret(*path_kv, *secret_name_kv, *secret_name_version, "kv2")
 			
 			// Unwrap the wrapped derived key
-			plaintext_key := functions.DecryptString(wrapped_key, *key_name_transit)
+			plaintext_key := functions.DecryptString(*path_transit, wrapped_key, *key_name_transit)
 			
 			// Decode the derived key
 			functions.Key = functions.DecodeBase64([]byte(plaintext_key.Data["plaintext"].(string)))
 			
 			// Debug
-			//fmt.Printf("VERSION_KEY: %v | %T\n", *secret_name_version, *secret_name_version)
-			//fmt.Printf("WRAPPED_KEY: %v | %T\n", wrapped_key, wrapped_key)
-			//fmt.Printf("DECRYPTED_KEY: %v | %T\n", plaintext_key, plaintext_key)
-			//fmt.Printf("GLOBAL_KEY: %v | %T\n", functions.Key, functions.Key)
+			if *debug {fmt.Printf("VERSION_KEY: %v | %T\n", *secret_name_version, *secret_name_version)
+			fmt.Printf("WRAPPED_KEY: %v | %T\n", wrapped_key, wrapped_key)
+			fmt.Printf("DECRYPTED_KEY: %v | %T\n", plaintext_key, plaintext_key)
+			fmt.Printf("GLOBAL_KEY: %v | %T\n", functions.Key, functions.Key)}
 
 			// Derypt the file
 			functions.DecryptFile(*decrypt_input_name, "decryptedfile")
@@ -258,7 +241,7 @@ func main() {
 		switch {
 
 		case *crypt == true:
-			functions.CheckLocalKey()
+			functions.CheckKey(*mode, *secret_name_version, *secret_name_kv, *path_kv, *path_transit, *key_name_transit)
 
 			// Debug
 			//fmt.Printf("Key: %x\n", functions.Key)
@@ -267,7 +250,7 @@ func main() {
 			functions.EncryptFile(*crypt_input_name, "local:encryptedfile")
 
 		case *decrypt == true:
-			functions.CheckLocalKey()
+			functions.CheckKey(*mode, *secret_name_version, *secret_name_kv, *path_kv, *path_transit, *key_name_transit)
 
 			// Debug
 			//fmt.Printf("Key: %x\n", functions.Key)
