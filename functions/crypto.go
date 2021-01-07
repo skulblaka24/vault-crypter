@@ -10,10 +10,13 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 
+	"github.com/skulblaka24/vault-crypter/functions"
+
 )
 
 var Key []byte
 
+// TO BE DELETED
 /*func CheckLocalKey() {
 	thekey, err := ioutil.ReadFile("key") //Check to see if a key was already created
 	fmt.Printf("Before conversion Key: %x\n", thekey)
@@ -28,8 +31,8 @@ var Key []byte
 func EncryptFile(inputfile string, outputfile string) {
 	b, err := ioutil.ReadFile(inputfile) //Read the target file
         if err != nil {
-                fmt.Printf("Unable to open the input file!\n")
-                os.Exit(0)
+                //fmt.Printf("Unable to open the input file!\n")
+                functions.Error("main", "\nUnable to open the input file!", *useColor, "1")
         }
 	ciphertext := encrypt(Key, b)
         //fmt.Printf("%x\n", ciphertext)
