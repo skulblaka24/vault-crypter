@@ -25,7 +25,7 @@ const (
 	hopeDelim = "♨"
 )
 
-func LookupToken(vault_token string){
+func LookupToken(vault_token string, useColor bool){
 	//fmt.Printf("VAULT_TOKEN: %s | %v | %T \n:", vault_token, vault_token, vault_token)
 
 	// Waits a second in case, we generated the token from a secondary node.
@@ -34,7 +34,7 @@ func LookupToken(vault_token string){
 	// Get the token infos
 	lookup, err := vault_client.Auth().Token().Lookup(vault_token)
 	if err != nil {
-		fmt.Println(err)
+		Error("main", "\n"+err.Error(), useColor, "1")
 	}
 
 	//fmt.Println(lookup.Data)

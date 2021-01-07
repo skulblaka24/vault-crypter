@@ -74,7 +74,7 @@ func CheckArgs() map[string]bool {
     return list
 }
 
-func InitVault(authType string) (string, *api.Client) {
+func InitVault(authType string, useColor bool) (string, *api.Client) {
 	
 	// Config can be set through ENV before any step and creating a new client
     //os.Setenv("VAULT_TOKEN", "<TOKEN>")
@@ -85,15 +85,11 @@ func InitVault(authType string) (string, *api.Client) {
 	}
 	client, err := api.NewClient(config)
 	if err != nil {
-		fmt.Println(err)
+		Error("main", "\n"+err.Error(), useColor, "1")
 	}
 	vault_client = client
 	
 	switch {
-	case authType != "token" && authType != "userpass" && authType != "approle":
-		fmt.Println("Error: This auth method is not supported, the one supported are: token, userpass, approle")
-		os.Exit(1)
-
 	case authType == "token":
 		//fmt.Println("authType: token")
 
@@ -107,7 +103,7 @@ func InitVault(authType string) (string, *api.Client) {
 		vault_username := os.Getenv("VAULT_USERNAME")
 		vault_password := os.Getenv("VAULT_PASSWORD")
 		
-		vault_token = userpassLogin(vault_username, vault_password)
+		vault_token = userpassLogin(vault_username, vault_password, useColor)
 
 		//fmt.Printf("Token: %s\n", vault_token)
 		
@@ -117,7 +113,7 @@ func InitVault(authType string) (string, *api.Client) {
 		vault_role_id := os.Getenv("VAULT_ROLE_ID")
 		vault_secret_id := os.Getenv("VAULT_SECRET_ID")
 
-		vault_token = approleLogin(vault_role_id, vault_secret_id)
+		vault_token = approleLogin(vault_role_id, vault_secret_id, useColor)
 
 		//fmt.Printf("Token: %s\n", vault_token)
 	}
@@ -127,7 +123,7 @@ func InitVault(authType string) (string, *api.Client) {
 	return vault_token, vault_client
 }
 
-func EnableTransit (path string) {
+func EnableTransit (path string, useColor bool) {
 
 	options := map[string]interface{}{
 			"type": "transit",
@@ -139,12 +135,12 @@ func EnableTransit (path string) {
 	if err != nil {
 		error := generateBufferForError(err, 2)
 		if error != "[* path is already in use at "+path+"/]" {
-			fmt.Println(err)
+			Error("main", "\n"+err.Error(), useColor, "1")
 		}
 	}
 }
 
-func EnableKV (path string) {
+func EnableKV (path string, useColor bool) {
 
 	options := map[string]interface{}{
 			"type": "kv-v2",
@@ -155,7 +151,7 @@ func EnableKV (path string) {
 	if err != nil {
 		error := generateBufferForError(err, 2)
 		if error != "[* path is already in use at "+path+"/]" {
-			fmt.Println(err)
+			Error("main", "\n"+err.Error(), useColor, "1")
 		}
 	}
 
@@ -165,17 +161,17 @@ func EnableKV (path string) {
 
 	_, err = vault_client.Logical().Write(path + "/config", options_configuration)
 	if err != nil {
-		fmt.Println(err)
+		Error("main", "\n"+err.Error(), useColor, "1")
 	}
 }
 
-func CreateKeyTransit (path string, key_name string) {
+func CreateKeyTransit (path string, key_name string, useColor bool) {
 
 	options := map[string]interface{}{}
 	_, err := vault_client.Logical().Write(path + "/keys/" + key_name, options)
 
 	if err != nil {
-		fmt.Println(err)
+		Error("main", "\n"+err.Error(), useColor, "1")
 		/*error := generateBufferForError(err, 2)
 		if error != "[* path is already in use at "+path+"/]" {
 			fmt.Println(err)
@@ -222,7 +218,7 @@ func generateBufferForError (err error, line int) string {
 
 }
 
-func userpassLogin(username string, password string) (string) {
+func userpassLogin(username string, password string, useColor bool) (string) {
 
 	options := map[string]interface{}{
 		"password": password,
@@ -231,13 +227,13 @@ func userpassLogin(username string, password string) (string) {
 
 	secret, err := vault_client.Logical().Write(path, options)
 	if err != nil {
-		fmt.Println(err)
+		Error("main", "\n"+err.Error(), useColor, "1")
 	}
 
 	return secret.Auth.ClientToken
 }
 
-func approleLogin(vault_role_id string, vault_secret_id string) (string) {
+func approleLogin(vault_role_id string, vault_secret_id string, useColor bool) (string) {
 
 	options := map[string]interface{}{
 		"role_id":   vault_role_id,
@@ -247,7 +243,7 @@ func approleLogin(vault_role_id string, vault_secret_id string) (string) {
 
 	secret, err := vault_client.Logical().Write(path, options)
 	if err != nil {
-		fmt.Println(err)
+		Error("main", "\n"+err.Error(), useColor, "1")
 	}
 	return secret.Auth.ClientToken
 }
