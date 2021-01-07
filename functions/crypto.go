@@ -11,18 +11,6 @@ import (
 
 var Key []byte
 
-// TO BE DELETED
-/*func CheckLocalKey() {
-	thekey, err := ioutil.ReadFile("key") //Check to see if a key was already created
-	fmt.Printf("Before conversion Key: %x\n", thekey)
-        if err != nil {
-                Key = createPrivKey() //If not, create one
-        } else {
-                //key = thekey //If so, set key as the key found in the file
-        		Key = DecodeBase64(thekey)
-        }
-}*/
-
 func EncryptFile(inputfile string, outputfile string, useColor bool) {
 	b, err := ioutil.ReadFile(inputfile) //Read the target file
 	if err != nil {
