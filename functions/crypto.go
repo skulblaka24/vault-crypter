@@ -1,23 +1,23 @@
 package functions
 
 import (
+	"io"
+	"io/ioutil"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/base64"
-	"io"
-	"io/ioutil"
 )
 
 var Key []byte
 
 func EncryptFile(inputfile string, outputfile string, useColor bool) {
-	b, err := ioutil.ReadFile(inputfile) //Read the target file
+	 // Read the target file
+	b, err := ioutil.ReadFile(inputfile)
 	if err != nil {
 		Error("main", "\nUnable to open/read the input file!", useColor, "1")
 	}
 	ciphertext := encrypt(Key, b, useColor)
-	//fmt.Printf("%x\n", ciphertext)
 	err = ioutil.WriteFile(outputfile, ciphertext, 0644)
 	if err != nil {
 		Error("main", "\nUnable to create encrypted file!", useColor, "1")
@@ -41,13 +41,12 @@ func encrypt(key, text []byte, useColor bool) []byte {
 }
 
 func DecryptFile(inputfile string, outputfile string, useColor bool) {
+	//Read the target file
 	z, err := ioutil.ReadFile(inputfile)
 	if err != nil {
 		Error("main", "\nUnable to open/read encrypted file!", useColor, "1")
 	}
 	result := decrypt(Key, z, useColor)
-	//fmt.Printf("Decrypted: %s\n", result)
-	//fmt.Printf("Decrypted file was created with file permissions 0777\n")
 	err = ioutil.WriteFile(outputfile, result, 0777)
 	if err != nil {
 		Error("main", "\nUnable to create decrypted file!", useColor, "1")

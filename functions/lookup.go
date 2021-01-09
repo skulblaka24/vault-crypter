@@ -8,8 +8,8 @@ import (
 	"bufio"
 	"strings"
 	"encoding/json"
-	"github.com/ryanuber/columnize"
 	"github.com/mitchellh/cli"
+	"github.com/ryanuber/columnize"
 )
 
 
@@ -26,7 +26,6 @@ const (
 )
 
 func LookupToken(vault_token string, useColor bool){
-	//fmt.Printf("VAULT_TOKEN: %s | %v | %T \n:", vault_token, vault_token, vault_token)
 
 	// Waits a second in case, we generated the token from a secondary node.
 	time.Sleep(1 * time.Second)
@@ -36,8 +35,6 @@ func LookupToken(vault_token string, useColor bool){
 	if err != nil {
 		Error("main", "\n"+err.Error(), useColor, "1")
 	}
-
-	//fmt.Println(lookup.Data)
 
 	formatOutput(lookup.Data)
 }
@@ -166,8 +163,6 @@ func formatOutput(data map[string]interface{}){
 
 	// Prepend the header
 	out = append([]string{"Key" + hopeDelim + "Value"}, out...)
-	
-	//fmt.Println(out)
 
 	ui := &VaultUI{
 		Ui: &cli.ColoredUi{

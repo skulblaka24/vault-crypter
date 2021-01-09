@@ -2,9 +2,9 @@ package functions
 
 import (
 	"fmt"
-	"io/ioutil"
 	"strconv"
-	"github.com/hashicorp/vault/api" // go get github.com/hashicorp/vault/api
+	"io/ioutil"
+	"github.com/hashicorp/vault/api"
 )
 
 func CheckKey(mode string, secret_name_version int, secret_name_kv string, path_kv string, path_transit string, key_name_transit string, useColor bool) (string, bool, *api.Secret) {
@@ -13,12 +13,14 @@ func CheckKey(mode string, secret_name_version int, secret_name_kv string, path_
     var wrapped_key string
 
 	if mode == "local" {
-		thekey, err := ioutil.ReadFile("key") //Check to see if a key was already created
-		//fmt.Printf("Before conversion Key: %x\n", thekey)
+		// Check to see if a key was already created
+		thekey, err := ioutil.ReadFile("key") 
+
         if err != nil {
-                Key = CreatePrivKey(useColor) //If not, create one
+                //If no key, create one
+                Key = CreatePrivKey(useColor)
         } else {
-                //key = thekey //If so, set key as the key found in the file
+                //If one, set key as the key found in the file
         		Key = DecodeBase64(thekey, useColor)
         }
     } else if mode == "vault" {
@@ -27,8 +29,6 @@ func CheckKey(mode string, secret_name_version int, secret_name_kv string, path_
 			wrapped_key = ReadSecret(path_kv, secret_name_kv, secret_name_version, "kv2", useColor)
 			key_exist = true
 
-			// Debug
-			//if *debug {fmt.Printf("WRAPPED_KEY: %v | %T\n", wrapped_key, wrapped_key)}
 		} else {
 
 			// Get Wrapped Derived Key from the transit engine
@@ -36,9 +36,6 @@ func CheckKey(mode string, secret_name_version int, secret_name_kv string, path_
 			wrapped_key = fmt.Sprintf("%v", data_key.Data["ciphertext"])
 			key_exist = false
 
-			// Debug
-			//if *debug {fmt.Printf("DATA_KEY: %v | %T\n\n", data_key, data_key)
-			//fmt.Printf("WRAPPED_KEY: %v | %T\n", wrapped_key, wrapped_key)}
 		}
     }
     return wrapped_key, key_exist, data_key
@@ -54,9 +51,6 @@ func ReadSecret(path string, secret string, version int, kversion string, useCol
 		if err != nil {
 			Error("main", "\n"+err.Error(), useColor, "1")
 		}
-		
-		// Debug
-		//fmt.Printf("Key:%s | %v | %T\n", request, request.Data["key"], request)
 
 		// Output the value from the token key
 		wrapped_key = fmt.Sprintf("%v", request.Data["key"])
@@ -66,8 +60,6 @@ func ReadSecret(path string, secret string, version int, kversion string, useCol
 		
 		s_version := strconv.Itoa(version)
 
-		//fmt.Printf("Version: %s | %v | %T\n", s_version, s_version, s_version)
-
 		options := make(map[string][]string)
 		options["version"] = []string{s_version}
 		
@@ -76,9 +68,6 @@ func ReadSecret(path string, secret string, version int, kversion string, useCol
 			// If the path or version is incorrect, the program will panic before printing the error.
 			Error("main", "\n"+err.Error(), useColor, "1")
 		}
-		
-		// Debug
-		//fmt.Printf("Key:%s | %v | %T\n", request, request.Data["data"], request)
 
 		// Convert the output to a map interface.
 		data := request.Data["data"].(map[string]interface{})
@@ -102,10 +91,6 @@ func GetDataKey(path string, key string, useColor bool) (*api.Secret){
 	if err != nil {
 		Error("main", "\n"+err.Error(), useColor, "1")
 	}
-
-	// Debug
-	//fmt.Printf("Wrapped_datakey: %s\n", datakey.Data["ciphertext"])
-	//fmt.Printf("Plaintext_datakey: %s\n", datakey.Data["plaintext"])
 	
 	return datakey
 }
@@ -120,8 +105,6 @@ func DecryptString(path string, ciphertext interface {}, key string, useColor bo
 		Error("main", "\nError decrypting file:"+err.Error(), useColor, "1")
 	}
 	
-	//fmt.Printf("Decrypted: %s\n", decrypted_contents.Data["plaintext"])
-
 	return decrypted_contents
 }
 
@@ -132,7 +115,6 @@ func WriteSecret(kversion string, path string, key string, useColor bool) string
 		options := map[string]interface{}{
 				"key":key,
 		}
-		//fmt.Println(options)
 
 		_, err := vault_client.Logical().Write(path, options)
 		if err != nil {
@@ -147,9 +129,6 @@ func WriteSecret(kversion string, path string, key string, useColor bool) string
 				"key":key,
 			},
 		}
-
-		// Debug
-		//fmt.Println(options)
 
 		output, err := vault_client.Logical().Write(path, options)
 		if err != nil {

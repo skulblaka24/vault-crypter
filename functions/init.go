@@ -1,7 +1,6 @@
 package functions
 
 import (
-	
 	"fmt"
 	"os"
 	"flag"
@@ -9,12 +8,12 @@ import (
 	"bufio"
 	"strings"
 	"strconv"
-	"github.com/hashicorp/vault/api" // go get github.com/hashicorp/vault/api
+	"github.com/hashicorp/vault/api"
 )
 
 var vault_addr = os.Getenv("VAULT_ADDR")
 var vault_token string
-var vault_client *api.Client // global variable
+var vault_client *api.Client // Global variable
 var color string
 
 // Error Type | Message | Color | Exit type
@@ -41,17 +40,12 @@ func Error(error_type string, message string, useColor bool, exit_type string) {
 	}
 }
 
-/*func Debug(error_type string, message string, Color string, exit_type string) {
-	if error_type == "arg" {
-		fmt.Printf("#################################################################\n")
-		fmt.Printf("#                        Argument Error                         #\n")
-		fmt.Printf("#################################################################\n")
-		fmt.Printf("Message: %v\n", message)
-		if exit_type == "0" || exit_type == "1" {
-			fmt.Printf("Exiting....\n")
-		}
-	}
-}*/
+// Message | Color
+func Debug(message string, useColor bool) {
+	if useColor == true{color = ColorYellow}else{color = ColorWhite}
+
+	fmt.Printf("%v%v - Debug: %v%v %v\n", color, time.Now().Format("02/01/2006 15:04:05"), ColorWhite, message, ColorReset)
+}
 
 func IsArgPassed(name string) bool {
     found := false
@@ -67,9 +61,6 @@ func CheckArgs() map[string]bool {
 	list := make(map[string]bool)
     flag.VisitAll(func(f *flag.Flag) {
     	list[f.Name] = IsArgPassed(f.Name)
-        
-        // Debug
-        //fmt.Printf("Out: "+f.Name+": %v\n", m[f.Name])
     })
     return list
 }
@@ -79,7 +70,6 @@ func InitVault(authType string, useColor bool) (string, *api.Client) {
 	// Config can be set through ENV before any step and creating a new client
     //os.Setenv("VAULT_TOKEN", "<TOKEN>")
 
-	//fmt.Println("### Step: Vault Initialisation:")
 	config := &api.Config{
 		Address: vault_addr,
 	}
@@ -91,31 +81,22 @@ func InitVault(authType string, useColor bool) (string, *api.Client) {
 	
 	switch {
 	case authType == "token":
-		//fmt.Println("authType: token")
 
 		vault_token = os.Getenv("VAULT_TOKEN")
-		
-		//fmt.Printf("Token: %s\n", vault_token)
 
 	case authType == "userpass":
-		//fmt.Println("authType: userpass")
 
 		vault_username := os.Getenv("VAULT_USERNAME")
 		vault_password := os.Getenv("VAULT_PASSWORD")
 		
 		vault_token = userpassLogin(vault_username, vault_password, useColor)
-
-		//fmt.Printf("Token: %s\n", vault_token)
 		
 	case authType == "approle":
-		//fmt.Println("authType: approle")
 
 		vault_role_id := os.Getenv("VAULT_ROLE_ID")
 		vault_secret_id := os.Getenv("VAULT_SECRET_ID")
 
 		vault_token = approleLogin(vault_role_id, vault_secret_id, useColor)
-
-		//fmt.Printf("Token: %s\n", vault_token)
 	}
 
 	vault_client.SetToken(vault_token)
@@ -172,10 +153,6 @@ func CreateKeyTransit (path string, key_name string, useColor bool) {
 
 	if err != nil {
 		Error("main", "\n"+err.Error(), useColor, "1")
-		/*error := generateBufferForError(err, 2)
-		if error != "[* path is already in use at "+path+"/]" {
-			fmt.Println(err)
-		}*/
 	}
 }
 
