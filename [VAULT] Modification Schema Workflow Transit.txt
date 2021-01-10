@@ -1,0 +1,40 @@
+################################################################
+
+			Modification Schema Workflow Transit
+
+################################################################
+
+Overall:
+
+1. Ajouter des numéros pour l'ordre du workflow
+
+
+Partie Encrypt:
+
+1. Clarifier la notion de datakey/transit key
+	- Peut-être en ajoutant des bébés clés sous la transit key.
+2. Dans l'action "Encrypt", 
+	Comment la derived key se retrouve en mémoire alors qu'elle se trouve dans un fichier. 
+		---> Ou alors elle est en variable ? 
+
+
+Partie Decrypt:
+
+1. Le decrypter ne se log t'il pas à vault pour "Grab Wrapped Key" ?
+	- Donc l'action Vault AUTH et le retour "token" parle au bloc Approle
+
+2. L'action du decrypter "Unwrapped Derived Key" ne correspond t'elle pas à deux actions ? 
+	- Demander à Vault de "Unwrap derived key"
+	- Puis Vault répond avec la "Unwrapped derived key"
+	- Ces deux actions parlent au bloc transit.
+
+3. Le decrypter utilise la unwrapped key in memory pour déchiffrer.
+	- Elle est en mémoire ou on la récupère juste avant sur Vault ? Ou la encore Variable ?
+	- "Unwrapped key" signifie "Unwrapped derived key"
+
+
+
+
+
+
+
