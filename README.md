@@ -34,6 +34,7 @@ The KV Engine, the Transit Engine and the key generation will be handle here aut
 **Three authentification methods** are supported: token, userpass, approle.
 
 Here is the list of the environment variables to provide vault-crypter with Vault connection information:
+
 **Note:** All original Vault client environment variable should be compatible, however not all have been tested...
 
 * VAULT_ADDR - REQUIRED - Must be the Vault cluster active node - Format: https://FQDN:8200
@@ -49,25 +50,25 @@ Here is the list of the environment variables to provide vault-crypter with Vaul
 The first step is to set the VAULT_ADDR and the VAULT_CACERT if needed:
 
 ```
-	$ export VAULT_ADDR="https://VAULT_DOMAIN/"
+$ export VAULT_ADDR="https://VAULT_DOMAIN/"
 ```
 	
 Then export the variable with the user info to create the transit and KV engine:
 ```
-	$ export VAULT_TOKEN="s.XXXXXXXXXXXXXXXXXXXX"
+$ export VAULT_TOKEN="s.XXXXXXXXXXXXXXXXXXXX"
 ```
 
 Then use vault-crypter to init the vault environment:
 ```
-	$ vault-crypter -i
+$ vault-crypter -i
 ```
 
 **Manual initialization:**
 
 Log in to the vault and add:
-	\- A KV engine version 2. You'll then need to use the argument "-pk" to specify the name to vault-crypter.
-	\- A Transit engine. Same here with the argument "-pt".
-	\- An "Encryption Key" using the "aes256-gcm96" type. Same here with the argument "-kt".
+* A KV engine version 2. You'll then need to use the argument "-pk" to specify the name to vault-crypter.
+* A Transit engine. Same here with the argument "-pt".
+* An "Encryption Key" using the "aes256-gcm96" type. Same here with the argument "-kt".
 
 **Note:** For more details about the arguments, see the help section in the binary.
 
