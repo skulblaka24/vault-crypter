@@ -8,6 +8,9 @@ Vault-crypter is a tool written using Golang to crypt/decrypt files locally usin
 * Add a changeable local key name.
 * Make two universal arguments for input file name and output file name (Instead of four: -cin, -con, -din, -don).
 
+**Go to:**
+* [Vault Workflow](#vault workflow)
+
 ## Vault Workflow
 
 ### Step 1 - Prerequisite
