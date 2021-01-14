@@ -25,24 +25,26 @@ go get
 
 go build vault-crypter.go
 
-### Step 3 - Initialize the Vault 
-#### Automatic initialization:
-	The KV Engine, the Transit Engine and the key generation will be handle here automatically by the Vault-Crypter binary.
-	**Three authentification methods** are supported: token, userpass, approle.
+### Step 3 - Initialize the Vault
 
-	Here is the list of the environment variables to provide vault-crypter with Vault connection information:
-		* All original Vault client environment variable should be compatible, however not all have been tested...
-		* VAULT_ADDR - REQUIRED - Must be the Vault cluster active node - Format: https://FQDN:8200
-		* VAULT_CACERT - CA can be specified to verify vault https certificate
-		* VAULT_SKIP_VERIFY - To avoid ssl verification
-		* VAULT_NAMESPACE - To set the namespace
-		* VAULT_TOKEN - If you are using the token auth method on Vault
-		* VAULT_ROLE_ID - If you are using the approle auth method on Vault
-		* VAULT_SECRET_ID - If you are using the approle auth method on Vault
-		* VAULT_USERNAME - If you are using the userpass auth method on Vault
-		* VAULT_PASSWORD - If you are using the userpass auth method on Vault
+**Automatic initialization:**
+The KV Engine, the Transit Engine and the key generation will be handle here automatically by the Vault-Crypter binary.
+**Three authentification methods** are supported: token, userpass, approle.
 
-	The first step is to set the VAULT_ADDR and the VAULT_CACERT if needed:
+Here is the list of the environment variables to provide vault-crypter with Vault connection information:
+	* All original Vault client environment variable should be compatible, however not all have been tested...
+	* VAULT_ADDR - REQUIRED - Must be the Vault cluster active node - Format: https://FQDN:8200
+	* VAULT_CACERT - CA can be specified to verify vault https certificate
+	* VAULT_SKIP_VERIFY - To avoid ssl verification
+	* VAULT_NAMESPACE - To set the namespace
+	* VAULT_TOKEN - If you are using the token auth method on Vault
+	* VAULT_ROLE_ID - If you are using the approle auth method on Vault
+	* VAULT_SECRET_ID - If you are using the approle auth method on Vault
+	* VAULT_USERNAME - If you are using the userpass auth method on Vault
+	* VAULT_PASSWORD - If you are using the userpass auth method on Vault
+
+The first step is to set the VAULT_ADDR and the VAULT_CACERT if needed:
+
 ```
 	$ export VAULT_ADDR="https://VAULT_DOMAIN/"
 ```
@@ -57,9 +59,8 @@ go build vault-crypter.go
 	$ vault-crypter -i
 ```
 
-#### Manual initialization:
-
-Log in to the vault and add:
+**Manual initialization:**
+	Log in to the vault and add:
 	\- A KV engine version 2. You'll then need to use the argument "-pk" to specify the name to vault-crypter.
 	\- A Transit engine. Same here with the argument "-pt".
 	\- An "Encryption Key" using the "aes256-gcm96" type. Same here with the argument "-kt".
