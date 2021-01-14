@@ -184,18 +184,16 @@ Optional arguments (not required):
 
 ## Local Workflow
 
-### Step 1 - Prerequisite
+### Step 1 - Encryption
 
-Nothing to do as the keys and its base64 encoding is handled by the binary.
-
-### Step 2 - Encryption
-
-**Note:** If you want to create a key by hand, at the moment, the file should be named "key". No other name. And the content of the file needs to be base64 encoded. For the cli command, it stays the same with/without a key as all is handled by the vault-crypter binary.
+**Note:** If you want to create a key by hand, at the moment, the file should be named "key". No other name. And the content of the file needs to be base64 encoded. For the cli command, it stays the same with/without a key as all is handled automatically by the vault-crypter binary.
 
 To encrypt:
 ```
 $ vault-crypter -m local -c -cin <INPUT_FILE_NAME>
 ```
+
+<details><summary><b>Options:</b></summary>
 
 Required arguments:
 * -m: Mode to be used, can be local or vault (default "vault").
@@ -206,12 +204,16 @@ Optional arguments (not required):
 * -cin: Add a crypt input file name without a path, just the name ! (default "input").
 * -con: Add a crypt output file name without a path, just the name ! (default "encryptedfile").
 
-### Step 3 - Decryption
+</details>
+
+### Step 2 - Decryption
 
 To decrypt, the decryption key named "key", should be available in the folder from which the command is executed:
 ```
 $ vault-crypter -m local -d -din <INPUT_FILE_NAME>
 ```
+
+<details><summary><b>Options:</b></summary>
 
 Required arguments:
 * -m: Mode to be used, can be local or vault (default "vault").
@@ -221,6 +223,8 @@ Optional arguments (not required):
 * -p: Add a path to retrieve and create crypted and decrypt files. Works with -din & -don Don't forget the / at the end ! (default "./").
 * -din: Add a decrypt input file name without a path, just the name ! (default "encryptedfile").
 * -don: Add a decrypt output file name without a path, just the name ! (default "decryptedfile").
+
+</details>
 
 ## Bonuses
 
