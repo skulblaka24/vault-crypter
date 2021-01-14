@@ -28,6 +28,7 @@ go build vault-crypter.go
 ### Step 3 - Initialize the Vault
 
 **Automatic initialization:**
+
 The KV Engine, the Transit Engine and the key generation will be handle here automatically by the Vault-Crypter binary.
 
 **Three authentification methods** are supported: token, userpass, approle.
@@ -51,18 +52,19 @@ The first step is to set the VAULT_ADDR and the VAULT_CACERT if needed:
 	$ export VAULT_ADDR="https://VAULT_DOMAIN/"
 ```
 	
-	Then export the variable with the user info to create the transit and KV engine:
+Then export the variable with the user info to create the transit and KV engine:
 ```
 	$ export VAULT_TOKEN="s.XXXXXXXXXXXXXXXXXXXX"
 ```
 
-	Then use vault-crypter to init the vault environment:
+Then use vault-crypter to init the vault environment:
 ```
 	$ vault-crypter -i
 ```
 
 **Manual initialization:**
-	Log in to the vault and add:
+
+Log in to the vault and add:
 	\- A KV engine version 2. You'll then need to use the argument "-pk" to specify the name to vault-crypter.
 	\- A Transit engine. Same here with the argument "-pt".
 	\- An "Encryption Key" using the "aes256-gcm96" type. Same here with the argument "-kt".
