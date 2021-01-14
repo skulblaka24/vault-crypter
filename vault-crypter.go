@@ -53,27 +53,27 @@ func main() {
 	    fmt.Printf("  1 - Initialize Vault (Optional argument: -pt -kt -pk): \n")
 	    fmt.Printf("   $ vault-crypter -i [OPTION]...[OPTION]\n\n")
 
-	    fmt.Printf("  2 - Crypt a file without an existing key in Vault (Optional argument: -pt -kt -pk -sk -cin -con ): \n")
+	    fmt.Printf("  2 - Crypt a file without an existing key in Vault (Optional argument: -p -pt -kt -pk -sk -cin -con ): \n")
 	    fmt.Printf("   $ vault-crypter -c [OPTION]...[OPTION]\n\n")
 
-	    fmt.Printf("  3 - Crypt a file with an existing key in Vault (Optional argument: -pt -kt -pk -sk -sv -cin -con): \n")
+	    fmt.Printf("  3 - Crypt a file with an existing key in Vault (Required argument: -sv, Optional: -p -pt -kt -pk -sk -cin -con): \n")
 	    fmt.Printf("   $ vault-crypter -c [OPTION]...[OPTION]\n\n")
 
-	    fmt.Printf("  4 - Decrypt a file with an existing key in Vault (Required: -din -sk -sv, Optional: -pt -kt -pk): \n")
+	    fmt.Printf("  4 - Decrypt a file with an existing key in Vault (Required argument: -din -sk -sv, Optional: -p -pt -kt -pk -don): \n")
 	    fmt.Printf("   $ vault-crypter -d [OPTION]...[OPTION]\n\n")
 
 	    fmt.Printf("\nLocal Workflow available:\n")
 
-	    fmt.Printf("  1 - Crypt a file with/without an existing local key (Optional argument: -cin): \n")
+	    fmt.Printf("  1 - Crypt a file with/without an existing local key (Required argument: -m, Optional: -p -cin -con): \n")
 	    fmt.Printf("  $ vault-crypter -m local -c [OPTION]...[OPTION]\n\n")
 
-	    fmt.Printf("  2 - Decrypt a file with an existing local key (Optional argument: -din): \n")
+	    fmt.Printf("  2 - Decrypt a file with an existing local key (Required argument: -m, Optional: -p -din -don): \n")
 	    fmt.Printf("   $ vault-crypter -m local -d [OPTION]...[OPTION]\n\n")
 
 	    fmt.Printf("\n")
 
 		fmt.Printf("Environment variables to provide vault-crypter with Vault connection info:\n")
-		fmt.Printf("  All original Vault client environment variable are be compatible...\n")
+		fmt.Printf("  All original Vault client environment variable should be compatible...\n")
 		fmt.Printf("  VAULT_ADDR - REQUIRED - Must be the Vault cluster active node - Format: https://FQDN:8200\n")
 		fmt.Printf("  VAULT_CACERT - CA can be specified to verify vault https certificate\n")
 		fmt.Printf("  VAULT_SKIP_VERIFY - To avoid ssl verification\n")
@@ -96,10 +96,10 @@ func main() {
 	
 	init := flag.Bool("i", false, "Enable the transit engine, its key and the kv engine")
 	lookup := flag.Bool("lookup", false, "Works alone, with or without color")
-	path_transit := flag.String("pt", "vault-crypt-transit", "Add a custom path for the transit engine")
+	path_transit := flag.String("pt", "vault-crypter-transit", "Add a custom path for the transit engine")
 	key_name_transit := flag.String("kt", "key", "Key name for the transit engine")
 
-	path_kv := flag.String("pk", "vault-crypt-kv", "Add a custom path for the kv engine")
+	path_kv := flag.String("pk", "vault-crypter-kv", "Add a custom path for the kv engine")
 	secret_name_kv := flag.String("sk", "transit-key", "Secret name for the stored wrapped key in the kv engine")
 	secret_name_version := flag.Int("sv", 0, "Version number for the stored wrapped key in the kv engine")
 
@@ -222,6 +222,7 @@ func main() {
 			
 			if key_exist == false {
 				// Save the wrapped derived key in the kv engine
+				// To be tested: data_key.Data["ciphertext"].(string) can may be replaced by wrapped_key - Should be the same result...
 				key_version = functions.WriteSecret("kv2", *path_kv+"/data/"+*secret_name_kv, data_key.Data["ciphertext"].(string), *useColor)
 			} else {
 				key_version = strconv.Itoa(*secret_name_version)
@@ -229,7 +230,7 @@ func main() {
 			
 			// Crypt the file
 			if *verbose {functions.Debug("Encrypting...", *useColor)}
-			functions.EncryptFile(*crypt_input_name, *path+"v"+key_version+":"+*crypt_output_name, *useColor)
+			functions.EncryptFile(*path+*crypt_input_name, *path+"v"+key_version+":"+*crypt_output_name, *useColor)
 			if *verbose {
 				functions.Debug("Encrypted file available here: "+*crypt_output_name, *useColor)
 				functions.Debug("Encryption done.", *useColor)
@@ -249,7 +250,7 @@ func main() {
 
 			// Decrypt the file
 			if *verbose {functions.Debug("Decrypting...", *useColor)}
-			functions.DecryptFile(*decrypt_input_name, *path+*decrypt_output_name, *useColor)
+			functions.DecryptFile(*path+*decrypt_input_name, *path+*decrypt_output_name, *useColor)
 			if *verbose {
 				functions.Debug("Decrypted file available here: decryptedfile. File was created with permissions 0777.", *useColor)
 				functions.Debug("Decryption done.", *useColor)
@@ -267,7 +268,7 @@ func main() {
 			functions.CheckKey(*mode, *secret_name_version, *secret_name_kv, *path_kv, *path_transit, *key_name_transit, *useColor)
 
 			if *verbose {functions.Debug("Encrypting...", *useColor)}
-			functions.EncryptFile(*crypt_input_name, *path+*crypt_output_name, *useColor)
+			functions.EncryptFile(*path+*crypt_input_name, *path+*crypt_output_name, *useColor)
 			if *verbose {
 				functions.Debug("Encrypted file available here: "+*crypt_output_name, *useColor)
 				functions.Debug("Encryption done.", *useColor)
@@ -278,7 +279,7 @@ func main() {
 			functions.CheckKey(*mode, *secret_name_version, *secret_name_kv, *path_kv, *path_transit, *key_name_transit, *useColor)
 
 			if *verbose {functions.Debug("Decrypting...", *useColor)}
-			functions.DecryptFile(*decrypt_input_name, *path+*decrypt_output_name, *useColor)
+			functions.DecryptFile(*path+*decrypt_input_name, *path+*decrypt_output_name, *useColor)
 			if *verbose {
 				functions.Debug("Decrypted file available here: "+*decrypt_output_name+". File was created with permissions 0777.", *useColor)
 				functions.Debug("Decryption done.", *useColor)
