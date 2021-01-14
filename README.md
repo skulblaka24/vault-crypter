@@ -7,8 +7,9 @@ Vault-crypter is a tool written using Golang to crypt/decrypt files locally usin
 * Logging system to be able to log to a file.
 * Add a changeable local key name.
 * Make two universal arguments for input file name and output file name (Instead of four: -cin, -con, -din, -don).
+* Add two alerts to disallow -d with -cin and -con or -c with -din and -don.
 
-**Content go to list:**
+**Content list:**
 * [Vault Workflow: Prerequisite](#vault-prerequisite)
 * [Vault Workflow: Binary preparation](#vault-binary)
 * [Vault Workflow: Initialization](#vault-init)
@@ -258,7 +259,7 @@ $ vault-crypter -i -v --color
 
 ### Lookup:
 
-To verify the token informations, I've implemented the vault lookup feature into vault-crypter:
+To verify the token informations, I've implemented the vault binary lookup feature into vault-crypter:
 
 Usage:
 ```
@@ -274,5 +275,5 @@ Coming one day...:wink:
 * **Mitchell Hashimoto** - For his cli package available here: github.com/mitchellh/cli.
 * **Ryan Uber** - For his columnize package that helps me output information correctly. Available here: github.com/ryanuber/columnize.
 * **Brian Shumate** - For his HashiCorp logo generator - github.com/brianshumate/hashii
-* **Sebastien Braun** - For his ideas, insight and schematics - github.com/planetrobbie
+* **Sebastien Braun** - For his ideas, insights and schematics - github.com/planetrobbie
 * **Gauthier Donikian** - github.com/skulblaka24
