@@ -27,12 +27,14 @@ go build vault-crypter.go
 
 ### Step 3 - Initialize the Vault
 
-*Automatic initialization:*
+**Automatic initialization:**
 The KV Engine, the Transit Engine and the key generation will be handle here automatically by the Vault-Crypter binary.
+
 **Three authentification methods** are supported: token, userpass, approle.
 
 Here is the list of the environment variables to provide vault-crypter with Vault connection information:
-* All original Vault client environment variable should be compatible, however not all have been tested...
+**Note:** All original Vault client environment variable should be compatible, however not all have been tested...
+
 * VAULT_ADDR - REQUIRED - Must be the Vault cluster active node - Format: https://FQDN:8200
 * VAULT_CACERT - CA can be specified to verify vault https certificate
 * VAULT_SKIP_VERIFY - To avoid ssl verification
