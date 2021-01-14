@@ -8,15 +8,13 @@ Vault-crypter is a tool written using Golang to crypt/decrypt files locally usin
 * Add a changeable local key name.
 * Make two universal arguments for input file name and output file name (Instead of four: -cin, -con, -din, -don).
 
-**Go to:**
-* [Vault Workflow](#vault)
+**Content go to list:**
 * [Vault Workflow: Prerequisite](#vault-prerequisite)
 * [Vault Workflow: Binary preparation](#vault-binary)
 * [Vault Workflow: Initialization](#vault-init)
 * [Vault Workflow: Encryption without a pre-stored key](#vault-encryption)
 * [Vault Workflow: Encryption with a pre-stored key](#vault-encryption-key)
 * [Vault Workflow: Decryption](#vault-decryption)
-* [Local Workflow](#local)
 * [Local Workflow: Encryption](#local-encryption)
 * [Local Workflow: Decryption](#local-decryption)
 * [Bonuses](#bonuses)
@@ -24,28 +22,26 @@ Vault-crypter is a tool written using Golang to crypt/decrypt files locally usin
 
 ## <a name="vault"></a>Vault Workflow
 
-### Step 1 - <a name="vault-prerequisite">Prerequisite
+### <a name="vault-prerequisite"></a>Step 1 - Prerequisite
 
 You'll need:
 * A Vault Cluster.
 * A Vault User that can create a Transit Engine and a KV Engine. 
 * This repository's content.
 
-The only prerequisite needed is a Vault Cluster and of course this repo's binary.
-
-### Step 2 - <a name="vault-binary">Prepare the binary
+### <a name="vault-binary"></a>Step 2 - Prepare the binary
 
 Get the packages:
 ```
-go get 
+$ go get 
 ```
 
 Compile the binary:
 ```
-go build vault-crypter.go
+$ go build vault-crypter.go
 ```
 
-### <a name="vault-init">Step 3 - Initialize the Vault
+### <a name="vault-init"></a>Step 3 - Initialize the Vault
 
 <details><summary><b>Automatic initialization:</b></summary>
 
@@ -94,7 +90,7 @@ Log in to the vault and add:
 **Note:** For more details about the arguments, see the help section in the binary.
 </details>
 
-### <a name="vault-encryption">Step 4 - Encryption without pre-stored keys
+### <a name="vault-encryption"></a>Step 4 - Encryption without pre-stored keys
 ![alt text](docs/Vault_Workflow_-_Encryption_without_an_existing_key.png "Encryption without pre-stored keys")
 
 Your binary is ready to encrypt.
@@ -128,7 +124,7 @@ Optional arguments (not required):
 
 </details>
 
-### <a name="vault-encryption-key">Step 5 - Encryption with pre-stored keys
+### <a name="vault-encryption-key"></a>Step 5 - Encryption with pre-stored keys
 ![alt text](docs/Vault_Workflow_-_Encryption_with_an_existing_key.png "Encryption with pre-stored keys")
 
 To encrypt with an existing key inside the vault, you'll need to specify to vault-crypter which secret version to use with -sv.
@@ -162,7 +158,7 @@ Optional arguments (not required):
 
 </details>
 
-### <a name="vault-decryption">Step 6 - Decryption
+### <a name="vault-decryption"></a>Step 6 - Decryption
 ![alt text](docs/Vault_Workflow_-_Decryption.png "Decryption")
 
 To decrypt with an existing key inside the vault, you'll need to specify to vault-crypter which secret version to use with -sv.
@@ -196,9 +192,9 @@ Optional arguments (not required):
 
 </details>
 
-## <a name="local">Local Workflow
+## <a name="local"></a>Local Workflow
 
-### <a name="local-encryption">Step 1 - Encryption
+### <a name="local-encryption"></a>Step 1 - Encryption
 
 **Note:** If you want to create a key by hand, at the moment, the file should be named "key". No other name. And the content of the file needs to be base64 encoded. For the cli command, it stays the same with/without a key as all is handled automatically by the vault-crypter binary.
 
@@ -220,7 +216,7 @@ Optional arguments (not required):
 
 </details>
 
-### <a name="local-decryption">Step 2 - Decryption
+### <a name="local-decryption"></a>Step 2 - Decryption
 
 To decrypt, the decryption key named "key", should be available in the folder from which the command is executed:
 ```
@@ -240,7 +236,7 @@ Optional arguments (not required):
 
 </details>
 
-## <a name="Bonuses">Bonuses
+## <a name="Bonuses"></a>Bonuses
 
 ### Verbose:
 
@@ -273,7 +269,7 @@ $ vault-crypter --lookup
 
 Coming one day...:wink:
 
-## <a name="contributors">Contributors
+## <a name="contributors"></a>Contributors
 * **HashiCorp Vault Binary Code** from which I get all the pre-coded interaction with a vault cluster.
 * **Mitchell Hashimoto** - For his cli package available here: github.com/mitchellh/cli.
 * **Ryan Uber** - For his columnize package that helps me output information correctly. Available here: github.com/ryanuber/columnize.
