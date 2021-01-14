@@ -27,21 +27,21 @@ go build vault-crypter.go
 
 ### Step 3 - Initialize the Vault
 
-**Automatic initialization:**
+*Automatic initialization:*
 The KV Engine, the Transit Engine and the key generation will be handle here automatically by the Vault-Crypter binary.
 **Three authentification methods** are supported: token, userpass, approle.
 
 Here is the list of the environment variables to provide vault-crypter with Vault connection information:
-	* All original Vault client environment variable should be compatible, however not all have been tested...
-	* VAULT_ADDR - REQUIRED - Must be the Vault cluster active node - Format: https://FQDN:8200
-	* VAULT_CACERT - CA can be specified to verify vault https certificate
-	* VAULT_SKIP_VERIFY - To avoid ssl verification
-	* VAULT_NAMESPACE - To set the namespace
-	* VAULT_TOKEN - If you are using the token auth method on Vault
-	* VAULT_ROLE_ID - If you are using the approle auth method on Vault
-	* VAULT_SECRET_ID - If you are using the approle auth method on Vault
-	* VAULT_USERNAME - If you are using the userpass auth method on Vault
-	* VAULT_PASSWORD - If you are using the userpass auth method on Vault
+* All original Vault client environment variable should be compatible, however not all have been tested...
+* VAULT_ADDR - REQUIRED - Must be the Vault cluster active node - Format: https://FQDN:8200
+* VAULT_CACERT - CA can be specified to verify vault https certificate
+* VAULT_SKIP_VERIFY - To avoid ssl verification
+* VAULT_NAMESPACE - To set the namespace
+* VAULT_TOKEN - If you are using the token auth method on Vault
+* VAULT_ROLE_ID - If you are using the approle auth method on Vault
+* VAULT_SECRET_ID - If you are using the approle auth method on Vault
+* VAULT_USERNAME - If you are using the userpass auth method on Vault
+* VAULT_PASSWORD - If you are using the userpass auth method on Vault
 
 The first step is to set the VAULT_ADDR and the VAULT_CACERT if needed:
 
@@ -65,14 +65,14 @@ The first step is to set the VAULT_ADDR and the VAULT_CACERT if needed:
 	\- A Transit engine. Same here with the argument "-pt".
 	\- An "Encryption Key" using the "aes256-gcm96" type. Same here with the argument "-kt".
 
-**NOTE:** For more details about the arguments, see the help section in the binary.
+**Note:** For more details about the arguments, see the help section in the binary.
 
 ### Step 4 - Encryption without pre-stored keys
 ![alt text](docs/Vault_Workflow_-_Encryption_without_an_existing_key.png "Encryption without pre-stored keys")
 
 Your binary is ready to encrypt.
 
-**NOTE:** By default, the workflow type is set on "vault" and the auth method is set on "token". It can be changed using arguments like -m for mode and -l for login method. 
+**Note:** By default, the workflow type is set on "vault" and the auth method is set on "token". It can be changed using arguments like -m for mode and -l for login method. 
 
 See the help section in the binary for more details.
 
@@ -166,7 +166,7 @@ Nothing to do as the keys and its base64 encoding is handled by the binary.
 
 ### Step 2 - Encryption
 
-**NOTE:** If you want to create a key by hand, at the moment, the file should be named "key". No other name. And the content of the file needs to be base64 encoded. For the cli command, it stays the same with/without a key as all is handled by the vault-crypter binary.
+**Note:** If you want to create a key by hand, at the moment, the file should be named "key". No other name. And the content of the file needs to be base64 encoded. For the cli command, it stays the same with/without a key as all is handled by the vault-crypter binary.
 
 To encrypt:
 ```
