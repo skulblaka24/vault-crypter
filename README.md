@@ -10,7 +10,7 @@ Vault-crypter is a tool written using Golang to crypt/decrypt files locally usin
 
 ## Vault Workflow
 
-### Step 0 - Prerequisite
+### Step 1 - Prerequisite
 
 You'll need:
 	\- A Vault Cluster.
@@ -19,14 +19,14 @@ You'll need:
 
 The only prerequisite needed is a Vault Cluster and of course this repo's binary.
 
-### Step 1 - Prepare the binary
+### Step 2 - Prepare the binary
 
 go get 
 
 go build vault-crypter.go
 
-### Step 2 - Initialize the Vault 
-* Automatic initialization:
+### Step 3 - Initialize the Vault 
+#### Automatic initialization:
 	The KV Engine, the Transit Engine and the key generation will be handle here automatically by the Vault-Crypter binary.
 	**Three authentification methods** are supported: token, userpass, approle.
 
@@ -57,7 +57,7 @@ go build vault-crypter.go
 	$ vault-crypter -i
 ```
 
-* Manual initialization:
+#### Manual initialization:
 
 Log in to the vault and add:
 	\- A KV engine version 2. You'll then need to use the argument "-pk" to specify the name to vault-crypter.
@@ -66,12 +66,14 @@ Log in to the vault and add:
 
 **NOTE:** For more details about the arguments, see the help section in the binary.
 
-### Step 3 - Encryption without pre-stored keys
+### Step 4 - Encryption without pre-stored keys
 ![alt text](docs/Vault_Workflow_-_Encryption_without_an_existing_key.png "Encryption without pre-stored keys")
 
 Your binary is ready to encrypt.
 
-**NOTE:** By default, the workflow type is set on "vault" and the auth method is set on "token". It can be changed using arguments like -m for mode and -l for login method. See the help section in the binary for more details.
+**NOTE:** By default, the workflow type is set on "vault" and the auth method is set on "token". It can be changed using arguments like -m for mode and -l for login method. 
+
+See the help section in the binary for more details.
 
 To encrypt:
 ```
@@ -95,11 +97,13 @@ Optional arguments (not required):
 * -con: Add a crypt output file name without a path, just the name ! (default "encryptedfile").
 
 
-### Step 4 - Encryption with pre-stored keys
+### Step 5 - Encryption with pre-stored keys
 ![alt text](docs/Vault_Workflow_-_Encryption_with_an_existing_key.png "Encryption with pre-stored keys")
 
 To encrypt with an existing key inside the vault, you'll need to specify to vault-crypter which secret version to use with -sv.
-This is the minimal requirement. However if you have a custom KV path and custom secret name, you'll need to add to -sv: -pk and -sk.
+This is the minimal requirement. 
+
+However if you have a custom KV path and custom secret name, you'll need to add to -sv: -pk and -sk.
 
 Command to encrypt:
 ```
@@ -123,17 +127,18 @@ Optional arguments (not required):
 * -cin: Add a crypt input file name without a path, just the name ! (default "input").
 * -con: Add a crypt output file name without a path, just the name ! (default "encryptedfile").
 
-### Step 5 - Decryption
+### Step 6 - Decryption
 ![alt text](docs/Vault_Workflow_-_Decryption.png "Decryption")
 
 To decrypt with an existing key inside the vault, you'll need to specify to vault-crypter which secret version to use with -sv.
-This is the minimal requirement. However if you have a custom KV path and custom secret name, you'll need to add to -sv: -pk and -sk.
+This is the minimal requirement. 
+
+However if you have a custom KV path and custom secret name, you'll need to add to -sv: -pk and -sk.
 
 Command to decrypt:
 ```
 $ vault-crypter -d -sv <KV_VERSION_NUMBER> -din <INPUT_ENCRYPTED_FILE_NAME> -don <DECRYPTED_FILE_NAME>
 ```
-(Required argument: -din -sv, Optional: -sk -pt -kt -pk -don)
 
 Generally available arguments (not required):
 * -l: The Vault auth login method available are: token, userpass, approle (default "token").
@@ -154,7 +159,7 @@ Optional arguments (not required):
 
 ## Local Workflow
 
-### Step 0 - Prerequisite
+### Step 1 - Prerequisite
 
 Nothing to do as the keys and its base64 encoding is handled by the binary.
 
@@ -194,26 +199,29 @@ Optional arguments (not required):
 
 ## Bonuses
 
-### Verbose
+### Verbose:
 
 To output informations on what is going on, you can add the argument "-v" to the command and it'll show more details:
-usage:
+
+Usage:
 ```
 $ vault-crypter -i -v
 ```
 
-### Colors
+### Colors:
 
 To add colors to outputs, you can add the argument "-c" to the command and it'll show rainbows:rainbow::
-usage:
+
+Usage:
 ```
 $ vault-crypter -i -v --color
 ```
 
-### Lookup
+### Lookup:
 
 To verify the token informations, I've implemented the vault lookup feature into vault-crypter:
-usage:
+
+Usage:
 ```
 $ vault-crypter --lookup
 ```
@@ -223,9 +231,9 @@ $ vault-crypter --lookup
 Coming one day...:wink:
 
 ## Contributors
-HashiCorp Vault Binary Code from which I get all the pre-coded interaction with a vault cluster.
-Mitchell Hashimoto - For his cli package available here: github.com/mitchellh/cli.
-Ryan Uber - For his columnize package that helps me output information correctly. Available here: github.com/ryanuber/columnize.
-Brian Shumate - For his HashiCorp logo generator - github.com/brianshumate/hashii
-Sebastien Braun - For his ideas, insight and schematics - github.com/planetrobbie
-Gauthier Donikian - github.com/skulblaka24
+* **HashiCorp Vault Binary Code** from which I get all the pre-coded interaction with a vault cluster.
+* **Mitchell Hashimoto** - For his cli package available here: github.com/mitchellh/cli.
+* **Ryan Uber** - For his columnize package that helps me output information correctly. Available here: github.com/ryanuber/columnize.
+* **Brian Shumate** - For his HashiCorp logo generator - github.com/brianshumate/hashii
+* **Sebastien Braun** - For his ideas, insight and schematics - github.com/planetrobbie
+* **Gauthier Donikian** - github.com/skulblaka24
