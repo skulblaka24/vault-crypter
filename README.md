@@ -22,7 +22,7 @@ The only prerequisite needed is a Vault Cluster and of course this repo's binary
 ### Step 2 - Prepare the binary
 
 Get the packages:
-``
+```
 go get 
 ```
 
