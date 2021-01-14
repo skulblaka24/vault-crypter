@@ -4,18 +4,18 @@ Vault-crypter is a tool written using Golang to crypt/decrypt files locally usin
 **Note:** This documentation works by workflows. At the moment the binary handles two environments the vault one or the local one.
 
 **To be added:** 
-	\- Logging system to be able to log to a file.
-	\- Add a changeable local key name.
-	\- Make two universal arguments for input file name and output file name (Instead of four: -cin, -con, -din, -don).
+* Logging system to be able to log to a file.
+* Add a changeable local key name.
+* Make two universal arguments for input file name and output file name (Instead of four: -cin, -con, -din, -don).
 
 ## Vault Workflow
 
 ### Step 1 - Prerequisite
 
 You'll need:
-	\- A Vault Cluster.
-	\- A Vault User that can create a Transit Engine and a KV Engine. 
-	\- This repository's content.
+* A Vault Cluster.
+* A Vault User that can create a Transit Engine and a KV Engine. 
+* This repository's content.
 
 The only prerequisite needed is a Vault Cluster and of course this repo's binary.
 
@@ -31,7 +31,7 @@ go build vault-crypter.go
 
 The KV Engine, the Transit Engine and the key generation will be handle here automatically by the Vault-Crypter binary.
 
-**Three authentification methods** are supported: token, userpass, approle.
+Three authentification methods are supported: token, userpass, approle.
 
 Here is the list of the environment variables to provide vault-crypter with Vault connection information:
 
