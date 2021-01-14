@@ -21,13 +21,19 @@ The only prerequisite needed is a Vault Cluster and of course this repo's binary
 
 ### Step 2 - Prepare the binary
 
+Get the packages:
+``
 go get 
+```
 
+Compile the binary:
+```
 go build vault-crypter.go
+```
 
 ### Step 3 - Initialize the Vault
 
-**Automatic initialization:**
+<details><summary><b>**Automatic initialization:**</b></summary>
 
 The KV Engine, the Transit Engine and the key generation will be handle here automatically by the Vault-Crypter binary.
 
@@ -62,6 +68,7 @@ Then use vault-crypter to init the vault environment:
 ```
 $ vault-crypter -i
 ```
+</details>
 
 **Manual initialization:**
 
