@@ -33,7 +33,7 @@ go build vault-crypter.go
 
 ### Step 3 - Initialize the Vault
 
-<details><summary><b>**Automatic initialization:**</b></summary>
+<details><summary><b>Automatic initialization:</b></summary>
 
 The KV Engine, the Transit Engine and the key generation will be handle here automatically by the Vault-Crypter binary.
 
@@ -70,7 +70,7 @@ $ vault-crypter -i
 ```
 </details>
 
-**Manual initialization:**
+<details><summary><b>Manual initialization:</b></summary>
 
 Log in to the vault and add:
 * A KV engine version 2. You'll then need to use the argument "-pk" to specify the name to vault-crypter.
@@ -78,6 +78,7 @@ Log in to the vault and add:
 * An "Encryption Key" using the "aes256-gcm96" type. Same here with the argument "-kt".
 
 **Note:** For more details about the arguments, see the help section in the binary.
+</details>
 
 ### Step 4 - Encryption without pre-stored keys
 ![alt text](docs/Vault_Workflow_-_Encryption_without_an_existing_key.png "Encryption without pre-stored keys")
@@ -92,6 +93,8 @@ To encrypt:
 ```
 $ vault-crypter -c -cin <INPUT_FILE_NAME> -con <ENCRYPTED_FILE_NAME>
 ```
+
+<details><summary><b>Options:</b></summary>
 
 Generally available arguments (not required):
 * -l: The Vault auth login method available are: token, userpass, approle (default "token").
@@ -109,6 +112,7 @@ Optional arguments (not required):
 * -cin: Add a crypt input file name without a path, just the name ! (default "input").
 * -con: Add a crypt output file name without a path, just the name ! (default "encryptedfile").
 
+</details>
 
 ### Step 5 - Encryption with pre-stored keys
 ![alt text](docs/Vault_Workflow_-_Encryption_with_an_existing_key.png "Encryption with pre-stored keys")
@@ -122,6 +126,8 @@ Command to encrypt:
 ```
 $ vault-crypter -c -sv <KV_VERSION_NUMBER> -cin <INPUT_FILE_NAME> -con <ENCRYPTED_FILE_NAME>
 ```
+
+<details><summary><b>Options:</b></summary>
 
 Generally available arguments (not required):
 * -l: The Vault auth login method available are: token, userpass, approle (default "token").
@@ -140,6 +146,8 @@ Optional arguments (not required):
 * -cin: Add a crypt input file name without a path, just the name ! (default "input").
 * -con: Add a crypt output file name without a path, just the name ! (default "encryptedfile").
 
+</details>
+
 ### Step 6 - Decryption
 ![alt text](docs/Vault_Workflow_-_Decryption.png "Decryption")
 
@@ -152,6 +160,8 @@ Command to decrypt:
 ```
 $ vault-crypter -d -sv <KV_VERSION_NUMBER> -din <INPUT_ENCRYPTED_FILE_NAME> -don <DECRYPTED_FILE_NAME>
 ```
+
+<details><summary><b>Options:</b></summary>
 
 Generally available arguments (not required):
 * -l: The Vault auth login method available are: token, userpass, approle (default "token").
@@ -169,6 +179,8 @@ Optional arguments (not required):
 * -p: Add a path to retrieve and create crypted and decrypt files. Works with -din & -don Don't forget the / at the end ! (default "./").
 * -din: Add a decrypt input file name without a path, just the name ! (default "encryptedfile").
 * -don: Add a decrypt output file name without a path, just the name ! (default "decryptedfile").
+
+</details>
 
 ## Local Workflow
 
