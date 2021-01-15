@@ -28,13 +28,20 @@ Vault-crypter is a tool written using Golang to crypt/decrypt files locally usin
 You'll need:
 * A Vault Cluster.
 * A Vault User that can create a Transit Engine and a KV Engine. 
-* This repository's content.
+* This repository's content which configuration is done in the next section.
 
 ### <a name="vault-binary"></a>Step 2 - Prepare the binary
 
+Get the repository:
+```
+$ git clone https://github.com/skulblaka24/vault-crypter.git
+```
+
 Get the packages:
 
-Coming soon...:wink:
+```
+$ go get github.com/skulblaka24/vault-crypter/functions
+```
 
 Compile the binary:
 ```
