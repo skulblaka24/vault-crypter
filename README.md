@@ -33,9 +33,8 @@ You'll need:
 ### <a name="vault-binary"></a>Step 2 - Prepare the binary
 
 Get the packages:
-```
-$ go get 
-```
+
+Coming soon...:wink:
 
 Compile the binary:
 ```
