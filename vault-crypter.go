@@ -2,8 +2,8 @@
 							Vault-Crypter Go Binary
 *	Decription: This binary has been created to crypt and decrypt files locally leveraging cryptographic keys inside of HashiCorp Vault.
 *	Author: Gauthier Donikian
-*	Version: 0.1
-*	Date: 30th November 2020
+*	Version: 0.1.1
+*	Date: 16 February 2021
 *	To be added:
 		- Logging system to be able to log to a file
 #################################################################################### */
