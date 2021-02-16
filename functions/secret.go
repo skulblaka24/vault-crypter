@@ -17,16 +17,21 @@ func CheckKey(mode string, secret_name_version int, secret_name_kv string, path_
 		thekey, err := ioutil.ReadFile("key")
 
 		if err != nil {
+
 			//If no key, create one
 			thekey = CreatePrivKey(useColor)
 			Key = DecodeBase64(thekey, useColor)
+
 		} else {
+
 			//If one, set key as the key found in the file
 			Key = DecodeBase64(thekey, useColor)
+
 		}
 	} else if mode == "vault" {
 
 		if secret_name_version != 0 {
+
 			wrapped_key = ReadSecret(path_kv, secret_name_kv, secret_name_version, "kv2", useColor)
 			key_exist = true
 
