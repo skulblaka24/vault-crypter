@@ -8,11 +8,11 @@ import (
 )
 
 func CheckKey(mode string, secret_name_version int, secret_name_kv string, path_kv string, path_transit string, key_name_transit string, useColor bool) (string, bool, *api.Secret) {
-	var key_exist bool
+    var key_exist bool
     var data_key *api.Secret
     var wrapped_key string
 
-	if mode == "local" {
+    if mode == "local" {
 		// Check to see if a key was already created
 		thekey, err := ioutil.ReadFile("key") 
 
@@ -21,7 +21,7 @@ func CheckKey(mode string, secret_name_version int, secret_name_kv string, path_
                 Key = CreatePrivKey(useColor)
         } else {
                 //If one, set key as the key found in the file
-        		Key = DecodeBase64(thekey, useColor)
+        	Key = DecodeBase64(thekey, useColor)
         }
     } else if mode == "vault" {
     	
