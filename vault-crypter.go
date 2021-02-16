@@ -96,10 +96,10 @@ func main() {
 	
 	init := flag.Bool("i", false, "Enable the transit engine, its key and the kv engine")
 	lookup := flag.Bool("lookup", false, "Works alone, with or without color")
-	path_transit := flag.String("pt", "vault-crypter-transit", "Add a custom path for the transit engine")
+	path_transit := flag.String("pt", "vault-crypter-transit-engine", "Add a custom path for the transit engine")
 	key_name_transit := flag.String("kt", "key", "Key name for the transit engine")
 
-	path_kv := flag.String("pk", "vault-crypter-kv", "Add a custom path for the kv engine")
+	path_kv := flag.String("pk", "vault-crypter-kv-engine", "Add a custom path for the kv engine")
 	secret_name_kv := flag.String("sk", "transit-key", "Secret name for the stored wrapped key in the kv engine")
 	secret_name_version := flag.Int("sv", 0, "Version number for the stored wrapped key in the kv engine")
 
